@@ -1,0 +1,39 @@
+-- a, tabla movimientos
+select
+	mov.fecha as fecha,
+	cli.descripcion as descripcion_cliente,
+	prov.descripcion as descripcion_proveedor,
+	prod.descripcion as descripcion_producto,
+	mc.descripcion as descripcion_marca,
+	mov.cantidad as cantidad,
+	mov.costo as costo,
+	mov.venta as venta,
+	mov.venta - mov.costo as ganancia_neta
+from Data_Movimientos mov
+left join Data_Clientes cli on cli.cod_cliente = mov.cod_cliente
+left join Data_Productos prod on prod.cod_prod = mov.cod_prod
+left join Data_Marcas mc on mc.cod_marca = prod.cod_marca
+left join Data_Proveedores prov on prov.cod_proveedor = prod.cod_proveedor
+
+-- b
+select * from Data_Marcas m
+left join Data_Productos p on p.cod_marca = m.cod_marca
+left join Data_Movimientos mov on mov.cod_prod = p.cod_prod
+where mov.venta is null
+
+
+-- c
+select
+	fecha,
+	descripcion_cliente,
+	sum(ganancia_neta)
+from (
+	select top 7
+	   fecha,
+	   descripcion_cliente,
+	   ganancia_neta
+	from movimientos
+	order by fecha, descripcion_cliente
+)
+group by fecha, descripcion_cliente
+order by fecha, descripcion_cliente
